@@ -137,24 +137,23 @@ module Cloudinary::CarrierWave
 
   def requested_format
     format_processor = self.all_processors.find{|processor| processor[0] == :convert}
-    if format_processor
+    case
+      when format_processor
       # Explicit format is given
-      format = Array(format_processor[1]).first
-    elsif self.transformation.include?(:format)
-      format = self.transformation[:format]
-    elsif self.version_name.present?
+      Array(format_processor[1]).first
+    when self.transformation.include?(:format)
+      self.transformation[:format]
+    when self.version_name.present?
       # No local format. The reset should be handled by main uploader
-      uploader = self.model.send(self.mounted_as)
-      format = uploader.format
+      self.parent_version.format
     end
-    format
   end
 
   def format
     format = Cloudinary::PreloadedFile.split_format(original_filename || "").last
     return format || "" if resource_type == "raw"
     format = requested_format || format || default_format
- 
+
     format = format.to_s.downcase
     Cloudinary::FORMAT_ALIASES[format] || format
   end
