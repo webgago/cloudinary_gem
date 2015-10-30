@@ -143,6 +143,8 @@ module Cloudinary::CarrierWave
 
   class CloudinaryFile
     attr_reader :identifier, :public_id, :filename, :format, :version, :storage_type, :resource_type
+    alias_method :path, :identifier
+    
     def initialize(identifier, uploader)
       @uploader = uploader
       @identifier = identifier
